@@ -1,3 +1,7 @@
 slock
 *.o
 config.h
+*.orig
+*.rej
+patches
+*.diff

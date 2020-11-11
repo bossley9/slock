@@ -34,9 +34,11 @@ To apply patches to any suckless tool, download patches from the suckless websit
 your own) and run the following command, making sure to specify the file being changed as
 `template.config.h` instead of the standard `config.def.h`.
 ```
-patch patchName.diff
+patch < patchName.diff
 ```
 
 In addition to my own personal tweaks and settings, below is a list of patches
 I have included in my slock build.
 
+- [capscolor-20170106-2d2a21a](https://tools.suckless.org/slock/patches/capscolor)
+- [xresources-20191126-53e56c7](https://tools.suckless.org/slock/patches/xresources)
