@@ -42,3 +42,4 @@ I have included in my slock build.
 
 - [capscolor-20170106-2d2a21a](https://tools.suckless.org/slock/patches/capscolor)
 - [xresources-20191126-53e56c7](https://tools.suckless.org/slock/patches/xresources)
+- [terminalkeys-1.4](https://tools.suckless.org/slock/patches/terminalkeys)
