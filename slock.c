@@ -26,6 +26,8 @@
 #include "arg.h"
 #include "util.h"
 
+#define TRANSPARENT 1
+
 char *argv0;
 
 enum {

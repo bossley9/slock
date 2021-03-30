@@ -18,6 +18,3 @@ ResourcePref resources[] = {
 
 /* treat a cleared input like a wrong password (color) */
 static const int failonclear = 0;
-
-/* use transparency? */
-#define TRANSPARENT 1
