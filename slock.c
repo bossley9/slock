@@ -149,20 +149,11 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 	XRRScreenChangeNotifyEvent *rre;
 	char buf[32], passwd[256], *inputhash;
 	int caps, num, screen, running, failure, oldc;
-	unsigned int color, indicators;
-#if !TRANSPARENT
-	unsigned int len, llen;
-#else
-	unsigned int len;
-#endif
+	unsigned int len, color, indicators;
 	KeySym ksym;
 	XEvent ev;
 
-#if !TRANSPARENT
-	len = llen = 0;
-#else
 	len = 0;
-#endif
 	caps = 0;
 	running = 1;
 	failure = 0;
@@ -199,7 +190,7 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 					ksym = XK_Return;
 					break;
 				case XK_h:
-                                       ksym = XK_BackSpace;
+					ksym = XK_BackSpace;
 					break;
 				}
 			}
@@ -238,8 +229,6 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 				break;
 			}
 
-
-
 #if !TRANSPARENT
 			color = len ? (caps ? CAPS : INPUT) : (failure || failonclear ? FAILED : INIT);
 			if (running && oldc != color) {
@@ -251,20 +240,6 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 				}
 				oldc = color;
 			}
-
-
-			/* if(llen == 0 && len != 0) { */
-			/* 	for(screen = 0; screen < nscreens; screen++) { */
-			/* 		XSetWindowBackground(dpy, locks[screen]->win, locks[screen]->colors[1]); */
-			/* 		XClearWindow(dpy, locks[screen]->win); */
-			/* 	} */
-			/* } else if(llen != 0 && len == 0) { */
-			/* 	for(screen = 0; screen < nscreens; screen++) { */
-			/* 		XSetWindowBackground(dpy, locks[screen]->win, locks[screen]->colors[0]); */
-			/* 		XClearWindow(dpy, locks[screen]->win); */
-			/* 	} */
-			/* } */
-			/* llen = len; */
 #endif
 
 		} else if (rr->active && ev.type == rr->evbase + RRScreenChangeNotify) {
