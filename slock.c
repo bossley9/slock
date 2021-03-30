@@ -265,9 +265,9 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 static struct lock *
 lockscreen(Display *dpy, struct xrandr *rr, int screen)
 {
+	char curs[] = {0, 0, 0, 0, 0, 0, 0, 0};
 	int i, ptgrab, kbgrab;
 	struct lock *lock;
-	char curs[] = {0, 0, 0, 0, 0, 0, 0, 0};
 	XColor color, dummy;
 	XSetWindowAttributes wa;
 	Cursor invisible;
@@ -282,9 +282,7 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
 #if TRANSPARENT
 	XMatchVisualInfo(dpy, DefaultScreen(dpy), 32, TrueColor, &vi);
 	wa.colormap = XCreateColormap(dpy, DefaultRootWindow(dpy), vi.visual, AllocNone);
-#endif
-
-#if !TRANSPARENT
+#else
 	for (i = 0; i < NUMCOLS; i++) {
 		XAllocNamedColor(dpy, DefaultColormap(dpy, lock->screen),
 		                 colorname[i], &color, &dummy);
@@ -298,7 +296,7 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
 	wa.background_pixel = lock->colors[INIT];
 #else
 	wa.border_pixel = 0;
-	wa.background_pixel = 0x88000000;
+	wa.background_pixel = 0;
 #endif
 	lock->win = XCreateWindow(dpy, lock->root, 0, 0,
 	                          DisplayWidth(dpy, lock->screen),
