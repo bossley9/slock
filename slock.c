@@ -19,11 +19,14 @@
 #include <X11/keysym.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/Xatom.h>
 #include <X11/XKBlib.h>
 #include <X11/Xresource.h>
 
 #include "arg.h"
 #include "util.h"
+
+#define TRANSPARENT 1
 
 char *argv0;
 
@@ -189,7 +192,7 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 					ksym = XK_Return;
 					break;
 				case XK_h:
-                                       ksym = XK_BackSpace;
+					ksym = XK_BackSpace;
 					break;
 				}
 			}
@@ -268,6 +271,7 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
 	XColor color, dummy;
 	XSetWindowAttributes wa;
 	Cursor invisible;
+	XVisualInfo vi;
 
 	if (dpy == NULL || screen < 0 || !(lock = malloc(sizeof(struct lock))))
 		return NULL;
@@ -275,22 +279,47 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
 	lock->screen = screen;
 	lock->root = RootWindow(dpy, lock->screen);
 
+#if !TRANSPARENT
 	for (i = 0; i < NUMCOLS; i++) {
 		XAllocNamedColor(dpy, DefaultColormap(dpy, lock->screen),
 		                 colorname[i], &color, &dummy);
 		lock->colors[i] = color.pixel;
 	}
+#else
+	XMatchVisualInfo(dpy, DefaultScreen(dpy), 32, TrueColor, &vi);
+	wa.colormap = XCreateColormap(dpy, DefaultRootWindow(dpy), vi.visual, AllocNone);
+#endif
 
 	/* init */
 	wa.override_redirect = 1;
+#if !TRANSPARENT
 	wa.background_pixel = lock->colors[INIT];
+#else
+	wa.border_pixel = 0;
+	wa.background_pixel = 0;
+#endif
 	lock->win = XCreateWindow(dpy, lock->root, 0, 0,
 	                          DisplayWidth(dpy, lock->screen),
 	                          DisplayHeight(dpy, lock->screen),
+#if !TRANSPARENT
 	                          0, DefaultDepth(dpy, lock->screen),
 	                          CopyFromParent,
 	                          DefaultVisual(dpy, lock->screen),
 	                          CWOverrideRedirect | CWBackPixel, &wa);
+#else
+														0, vi.depth,
+														CopyFromParent,
+														vi.visual,
+														CWOverrideRedirect | CWBackPixel | CWColormap | CWBorderPixel, &wa);
+#endif
+
+	Atom name_atom = XA_WM_NAME;
+	Atom name_ewmh_atom = XInternAtom(dpy, "_NET_WM_NAME", False);
+	XTextProperty name_prop = { (unsigned char*)"slock", name_atom, 8, 1 };
+	XTextProperty name_prop_ewmh = { (unsigned char*)"slock", name_ewmh_atom, 8, 1 };
+	XSetWMName(dpy, lock->win, &name_prop);
+	XSetWMName(dpy, lock->win, &name_prop_ewmh);
+
 	lock->pmap = XCreateBitmapFromData(dpy, lock->win, curs, 8, 8);
 	invisible = XCreatePixmapCursor(dpy, lock->pmap, lock->pmap,
 	                                &color, &color, 0, 0);

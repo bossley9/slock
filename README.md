@@ -1,4 +1,5 @@
 # slock - simple screen locker
+
 simple screen locker utility for X.
 
 > This fork is a maintained version of slock intended for use in my
@@ -6,11 +7,13 @@ simple screen locker utility for X.
 > hosted by suckless [on their own git server](https://git.suckless.org/slock).
 
 ## Table of Contents
+
 1. [Installation](#installation)
 2. [Running](#running)
 3. [Patches](#patches)
 
 ## Installation <a name="installation"></a>
+
 In order to build st you need the `Xlib` header files. For this specific fork of slock, you
 will also need the `envsubst` utility in order to compile in template variables.
 
@@ -22,6 +25,7 @@ for visibility.
     sudo make clean install
 
 ## Running <a name="running"></a>
+
 After building, running the locker is as simple as
 invoking the slock command. To get out of it, enter your password.
 
@@ -30,9 +34,11 @@ invoking the slock command. To get out of it, enter your password.
 See the man page for additional details on usage.
 
 ## Patches <a name="patches"></a>
+
 To apply patches to any suckless tool, download patches from the suckless website (or make
 your own) and run the following command, making sure to specify the file being changed as
 `template.config.h` instead of the standard `config.def.h`.
+
 ```
 patch < patchName.diff
 ```
@@ -43,3 +49,4 @@ I have included in my slock build.
 - [capscolor-20170106-2d2a21a](https://tools.suckless.org/slock/patches/capscolor)
 - [xresources-20191126-53e56c7](https://tools.suckless.org/slock/patches/xresources)
 - [terminalkeys-1.4](https://tools.suckless.org/slock/patches/terminalkeys)
+- [transparent lock by chjj](https://github.com/chjj/slock/commit/cd60c12c36d66fd1dbc672c2695d5ccd3a036426)
