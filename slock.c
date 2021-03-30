@@ -267,12 +267,10 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 static struct lock *
 lockscreen(Display *dpy, struct xrandr *rr, int screen)
 {
-#if !TRANSPARENT
-	char curs[] = {0, 0, 0, 0, 0, 0, 0, 0};
-#endif
 	int i, ptgrab, kbgrab;
 	struct lock *lock;
 #if !TRANSPARENT
+	char curs[] = {0, 0, 0, 0, 0, 0, 0, 0};
 	XColor color, dummy;
 #endif
 	XSetWindowAttributes wa;
@@ -327,8 +325,8 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
 
 	Atom name_atom = XA_WM_NAME;
 	Atom name_ewmh_atom = XInternAtom(dpy, "_NET_WM_NAME", False);
-	XTextProperty name_prop = { "slock", name_atom, 8, 1 };
-	XTextProperty name_prop_ewmh = { "slock", name_ewmh_atom, 8, 1 };
+	XTextProperty name_prop = { (unsigned char*)"slock", name_atom, 8, 1 };
+	XTextProperty name_prop_ewmh = { (unsigned char*)"slock", name_ewmh_atom, 8, 1 };
 	XSetWMName(dpy, lock->win, &name_prop);
 	XSetWMName(dpy, lock->win, &name_prop_ewmh);
 
