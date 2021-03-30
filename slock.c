@@ -228,7 +228,6 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 				}
 				break;
 			}
-
 			color = len ? (caps ? CAPS : INPUT) : (failure || failonclear ? FAILED : INIT);
 			if (running && oldc != color) {
 				for (screen = 0; screen < nscreens; screen++) {
@@ -239,7 +238,6 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 				}
 				oldc = color;
 			}
-
 		} else if (rr->active && ev.type == rr->evbase + RRScreenChangeNotify) {
 			rre = (XRRScreenChangeNotifyEvent*)&ev;
 			for (screen = 0; screen < nscreens; screen++) {
@@ -279,15 +277,15 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
 	lock->screen = screen;
 	lock->root = RootWindow(dpy, lock->screen);
 
-#if TRANSPARENT
-	XMatchVisualInfo(dpy, DefaultScreen(dpy), 32, TrueColor, &vi);
-	wa.colormap = XCreateColormap(dpy, DefaultRootWindow(dpy), vi.visual, AllocNone);
-#else
+#if !TRANSPARENT
 	for (i = 0; i < NUMCOLS; i++) {
 		XAllocNamedColor(dpy, DefaultColormap(dpy, lock->screen),
 		                 colorname[i], &color, &dummy);
 		lock->colors[i] = color.pixel;
 	}
+#else
+	XMatchVisualInfo(dpy, DefaultScreen(dpy), 32, TrueColor, &vi);
+	wa.colormap = XCreateColormap(dpy, DefaultRootWindow(dpy), vi.visual, AllocNone);
 #endif
 
 	/* init */
@@ -330,8 +328,7 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
 		if (ptgrab != GrabSuccess) {
 			ptgrab = XGrabPointer(dpy, lock->root, False,
 			                      ButtonPressMask | ButtonReleaseMask |
-			                      PointerMotionMask,
-														GrabModeAsync,
+			                      PointerMotionMask, GrabModeAsync,
 			                      GrabModeAsync, None, invisible, CurrentTime);
 		}
 		if (kbgrab != GrabSuccess) {
