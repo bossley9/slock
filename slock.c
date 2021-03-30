@@ -229,7 +229,6 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 				break;
 			}
 
-#if !TRANSPARENT
 			color = len ? (caps ? CAPS : INPUT) : (failure || failonclear ? FAILED : INIT);
 			if (running && oldc != color) {
 				for (screen = 0; screen < nscreens; screen++) {
@@ -240,7 +239,6 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 				}
 				oldc = color;
 			}
-#endif
 
 		} else if (rr->active && ev.type == rr->evbase + RRScreenChangeNotify) {
 			rre = (XRRScreenChangeNotifyEvent*)&ev;
@@ -269,17 +267,11 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
 {
 	int i, ptgrab, kbgrab;
 	struct lock *lock;
-#if !TRANSPARENT
 	char curs[] = {0, 0, 0, 0, 0, 0, 0, 0};
 	XColor color, dummy;
-#endif
 	XSetWindowAttributes wa;
-#if !TRANSPARENT
 	Cursor invisible;
-#endif
-#if TRANSPARENT
 	XVisualInfo vi;
-#endif
 
 	if (dpy == NULL || screen < 0 || !(lock = malloc(sizeof(struct lock))))
 		return NULL;
@@ -330,12 +322,10 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
 	XSetWMName(dpy, lock->win, &name_prop);
 	XSetWMName(dpy, lock->win, &name_prop_ewmh);
 
-#if !TRANSPARENT
 	lock->pmap = XCreateBitmapFromData(dpy, lock->win, curs, 8, 8);
 	invisible = XCreatePixmapCursor(dpy, lock->pmap, lock->pmap,
 	                                &color, &color, 0, 0);
 	XDefineCursor(dpy, lock->win, invisible);
-#endif
 
 	/* Try to grab mouse pointer *and* keyboard for 600ms, else fail the lock */
 	for (i = 0, ptgrab = kbgrab = -1; i < 6; i++) {
@@ -343,13 +333,8 @@ lockscreen(Display *dpy, struct xrandr *rr, int screen)
 			ptgrab = XGrabPointer(dpy, lock->root, False,
 			                      ButtonPressMask | ButtonReleaseMask |
 			                      PointerMotionMask,
-#if !TRANSPARENT
 														GrabModeAsync,
 			                      GrabModeAsync, None, invisible, CurrentTime);
-#else
-														GrabModeAsync,
-			                      GrabModeAsync, None, None, CurrentTime);
-#endif
 		}
 		if (kbgrab != GrabSuccess) {
 			kbgrab = XGrabKeyboard(dpy, lock->root, True,
